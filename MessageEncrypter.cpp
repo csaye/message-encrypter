@@ -28,7 +28,14 @@ Command toCommand(std::string input)
 
 std::string encryptChar(char ch)
 {
-    return "0065";
+    std::string encrypted = std::to_string((int)ch);
+
+    for (int i = encrypted.length(); i < 4; i++)
+    {
+        encrypted = "0" + encrypted;
+    }
+
+    return encrypted;
 }
 
 std::string encrypt(std::string message)
@@ -81,11 +88,29 @@ void readMessage()
     }
 }
 
+bool isInvalidString(std::string str)
+{
+    if (str == "") return true;
+
+    for (int i = 0; i < str.length(); i++)
+    {
+        char ch = str[i];
+        if (ch < 32 || ch > 127) return true;
+    }
+
+    return false;
+}
+
 void writeMessage()
 {
     std::string input;
     std::cout << "Please enter message to write to file:\n";
     std::getline(std::cin, input);
+    while (isInvalidString(input))
+    {
+        std::cout << "Invalid input. Please try again:\n";
+        std::getline(std::cin, input);
+    }
 
     std::ofstream file("message.txt");
     file << encrypt(input);
