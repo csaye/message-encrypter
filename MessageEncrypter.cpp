@@ -25,34 +25,7 @@ Command toCommand(std::string input)
     return ::Invalid;
 }
 
-void processCommands()
-{
-    std::string input;
-    std::cin >> input;
-
-    switch (toCommand(input))
-    {
-        case Invalid:
-            break;
-        case Quit:
-            break;
-        case Help:
-            break;
-        case Read:
-            break;
-        case Write:
-            break;
-    }
-}
-
-void writeToFile()
-{
-    std::ofstream file("message.txt");
-    file << "hello world";
-    file.close();
-}
-
-void readFromFile()
+void readMessage()
 {
     std::string line;
     std::ifstream file("message.txt");
@@ -71,10 +44,52 @@ void readFromFile()
     }
 }
 
+void writeMessage()
+{
+    std::string input;
+    std::cout << "Please enter message to write to file:\n";
+    std::getline(std::cin, input);
+
+    std::ofstream file("message.txt");
+    file << input;
+    file.close();
+
+    std::cout << "Message successfully written to file.\n";
+}
+
+void processCommands()
+{
+    std::string input;
+    bool running = true;
+
+    while (running)
+    {
+        std::cout << "> ";
+        std::getline(std::cin, input);
+
+        switch (toCommand(input))
+        {
+            case Invalid:
+                std::cout << "Invalid command. Enter \"help\" for a list of commands.\n";
+                break;
+            case Quit:
+                running = false;
+                break;
+            case Help:
+                std::cout << "Commands:\nquit, help, read, write\n";
+                break;
+            case Read:
+                readMessage();
+                break;
+            case Write:
+                writeMessage();
+                break;
+        }
+    }
+}
+
 int main()
 {
     promptUser();
     processCommands();
-    // writeToFile();
-    // readFromFile();
 }
