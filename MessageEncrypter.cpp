@@ -26,44 +26,70 @@ Command toCommand(std::string input)
     return ::Invalid;
 }
 
-std::string encryptChar(char ch)
+std::string getEncryptor(char ch)
 {
-    std::string encrypted = std::to_string((int)ch);
+    int firstEncryptor = ((ch % 19) + 7) * 3;
+    int secondEncryptor = ((ch % 13) + 2) * 7;
 
-    for (int i = encrypted.length(); i < 4; i++)
+    return std::to_string(firstEncryptor) + std::to_string(secondEncryptor);
+}
+
+std::string encryptChar(char ch, std::string encryptor)
+{
+    int firstEncryptor = stoi(encryptor.substr(0, 2));
+    int secondEncryptor = stoi(encryptor.substr(2, 4));
+
+    int encryptedNum = ch;
+
+    encryptedNum *= firstEncryptor;
+    encryptedNum -= secondEncryptor;
+
+    std::string encryptedString = std::to_string(encryptedNum);
+
+    for (int i = encryptedString.length(); i < 4; i++)
     {
-        encrypted = "0" + encrypted;
+        encryptedString = "0" + encryptedString;
     }
 
-    return encrypted;
+    return encryptedString;
 }
 
 std::string encrypt(std::string message)
 {
-    std::string encryptedMessage = "";
+    std::string encryptor = getEncryptor(message[0]);
+    std::string encryptedMessage = encryptor;
 
     for (int i = 0; i < message.length(); i++)
     {
         char ch = message[i];
-        encryptedMessage += encryptChar(ch);
+        encryptedMessage += encryptChar(ch, encryptor);
     }
 
     return encryptedMessage;
 }
 
-char decryptChar(std::string str)
+char decryptChar(std::string str, std::string encryptor)
 {
-    return stoi(str);
+    int firstEncryptor = stoi(encryptor.substr(0, 2));
+    int secondEncryptor = stoi(encryptor.substr(2, 4));
+
+    int decryptedNum = stoi(str);
+
+    decryptedNum += secondEncryptor;
+    decryptedNum /= firstEncryptor;
+
+    return decryptedNum;
 }
 
 std::string decrypt(std::string message)
 {
     std::string decryptedMessage = "";
+    std::string decryptor = message.substr(0, 4);
 
-    for (int i = 0; i < message.length(); i += 4)
+    for (int i = 4; i < message.length(); i += 4)
     {
         std::string str = message.substr(i, 4);
-        decryptedMessage += decryptChar(str);
+        decryptedMessage += decryptChar(str, decryptor);
     }
 
     return decryptedMessage;
@@ -84,13 +110,13 @@ void readMessage()
     }
     else
     {
-        std::cout << "No message.txt file found.\n";
+        std::cout << "No message.txt file found. Write to file to automatically create it.\n";
     }
 }
 
 bool isInvalidString(std::string str)
 {
-    if (str == "") return true;
+    if (str.length() < 1) return true;
 
     for (int i = 0; i < str.length(); i++)
     {
@@ -138,7 +164,7 @@ void processCommands()
                 running = false;
                 break;
             case Help:
-                std::cout << "Commands:\nquit, help, read, write\n";
+                std::cout << "Commands:\nread, write, quit, help\n";
                 break;
             case Read:
                 readMessage();
