@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 enum Command
 {
@@ -25,6 +26,42 @@ Command toCommand(std::string input)
     return ::Invalid;
 }
 
+std::string encryptChar(char ch)
+{
+    return "0065";
+}
+
+std::string encrypt(std::string message)
+{
+    std::string encryptedMessage = "";
+
+    for (int i = 0; i < message.length(); i++)
+    {
+        char ch = message[i];
+        encryptedMessage += encryptChar(ch);
+    }
+
+    return encryptedMessage;
+}
+
+char decryptChar(std::string str)
+{
+    return stoi(str);
+}
+
+std::string decrypt(std::string message)
+{
+    std::string decryptedMessage = "";
+
+    for (int i = 0; i < message.length(); i += 4)
+    {
+        std::string str = message.substr(i, 4);
+        decryptedMessage += decryptChar(str);
+    }
+
+    return decryptedMessage;
+}
+
 void readMessage()
 {
     std::string line;
@@ -34,7 +71,7 @@ void readMessage()
     {
         while (getline(file, line))
         {
-            std::cout << line << "\n";
+            std::cout << decrypt(line) << "\n";
         }
         file.close();
     }
@@ -51,7 +88,7 @@ void writeMessage()
     std::getline(std::cin, input);
 
     std::ofstream file("message.txt");
-    file << input;
+    file << encrypt(input);
     file.close();
 
     std::cout << "Message successfully written to file.\n";
